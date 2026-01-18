@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,7 +27,7 @@ public class RobotContainer {
     /* Settings */
     private final Map<String, Boolean> robotSystems = Map.of(
             "swerve", true,
-            "turret", true,
+            "turret", false,
             "sucking", false
     );
 
@@ -68,11 +69,12 @@ public class RobotContainer {
             swerveSubsystem.setDefaultCommand(new TeleopDrive(
                     swerveSubsystem, driverController
             ));
+            driverController.triangle().onTrue(new InstantCommand(swerveSubsystem::zeroHeading));
         }
 
         if (robotSystems.get("turret")) {
             limeLightFollowingSubsystems.setDefaultCommand(new LimeLightFollowingCommand(
-                    LimelightHelpers.getTX("",0),driverController, limeLightFollowingSubsystems
+                    swerveSubsystem.getPose(),driverController, limeLightFollowingSubsystems
             ));
         }
     }

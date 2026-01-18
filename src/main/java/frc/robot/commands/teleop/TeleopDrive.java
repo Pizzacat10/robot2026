@@ -32,7 +32,7 @@ public class TeleopDrive extends Command {
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
                 MathUtil.applyDeadband(-joystick.getLeftY(), 0.1) * (RobotContainer.isFieldRelative() ? 1 : -1) * (joystick.getHID().getL3Button() ? 0.5 : 1),
                 MathUtil.applyDeadband(-joystick.getLeftX(), 0.1) * (RobotContainer.isFieldRelative() ? 1 : -1) * (joystick.getHID().getR3Button() ? 0.5 : 1),
-                -MathUtil.applyDeadband(-joystick.getRightX(), 0.01));
+                MathUtil.applyDeadband(-joystick.getRightX(), 0.01));
         chassisSpeeds = SwerveDriveHelper.updateChassisSpeeds(chassisSpeeds, () -> false, SwerveDriveHelper.DriveMode.NewDriver);
         chassisSpeeds = SwerveDriveHelper.joystickToRobotUnits(chassisSpeeds, SwerveConstants.maxSpeed, SwerveConstants.maxAngularVelocity);
 

@@ -16,10 +16,10 @@ import frc.robot.utils.swerve.SwerveModuleConstants;
 
 public class SwerveConstants {
     public static COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
-            COTSTalonFXSwerveConstants.SDS.MK5n.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK5n.driveRatios.R3);
+            COTSTalonFXSwerveConstants.SDS.MK5n.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK5n.driveRatios.R1);
 
     /*can bus */
-    public static CANBus canBus = new CANBus("DriverBus");
+    public static CANBus canBus = new CANBus("rio");
 
     /* Drivetrain Constants */
     public static double wheelCircumference = chosenModule.wheelCircumference;
@@ -110,10 +110,10 @@ public class SwerveConstants {
     //Rotation2d.fromRotations(0.479736328125)
     //Rotation2d.fromRotations(-0.38134765625 - (3.0/4.0))
     //Rotation2d.fromRotations(-0.230224609375 - 0.5)
-    public static SwerveModuleConstants FL = new SwerveModuleConstants(2, 1, 9, Rotation2d.fromDegrees(-56.689).plus(Rotation2d.k180deg), slot0Configs, frontLeftPos);
-    public static SwerveModuleConstants FR = new SwerveModuleConstants(4, 3, 10, Rotation2d.fromDegrees(-169.01), slot0Configs, frontRightPos);
-    public static SwerveModuleConstants BL = new SwerveModuleConstants(6, 5, 11, Rotation2d.fromDegrees(136.84).plus(Rotation2d.k180deg), slot0Configs, backLeftPos);
-    public static SwerveModuleConstants BR = new SwerveModuleConstants(8, 7, 12, Rotation2d.fromDegrees(86.66), slot0Configs, backRightPos);
+    public static SwerveModuleConstants FR = new SwerveModuleConstants(1, 2, 9, Rotation2d.fromDegrees(-103.887).plus(Rotation2d.k180deg), slot0Configs, frontLeftPos);
+    public static SwerveModuleConstants FL = new SwerveModuleConstants(3, 4, 10, Rotation2d.fromDegrees(49.834), slot0Configs, frontRightPos);
+    public static SwerveModuleConstants BR = new SwerveModuleConstants(5, 6, 11, Rotation2d.fromDegrees(40.43).plus(Rotation2d.k180deg), slot0Configs, backLeftPos);
+    public static SwerveModuleConstants BL = new SwerveModuleConstants(7, 8, 12, Rotation2d.fromDegrees(169.805), slot0Configs, backRightPos);
 
 //    public String filepath = "/home/lvuser/natinst/ModuleOffsets.csv";
 
