@@ -11,6 +11,8 @@ public class CanConstants {
     public static int ShootingMotor2;
     public static int TurningMotor;
     public static int TurningCancoder;
+    public static int MaxAngle = 360;
+    public static int MinAngle = -360;
 
     //Sucking
 

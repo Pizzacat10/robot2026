@@ -3,52 +3,36 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CanConstants;
 
-import java.sql.DataTruncation;
+import static frc.robot.constants.SwerveConstants.maxSpeed;
 
 public class LimeLightFollowingSubsystems extends SubsystemBase {
 
-    private TalonFX motor;
+    private TalonFX turningMotor;
     private Encoder canCoder;
 
-    private double maxTurn; // use for when the coder give a positive number
-    private double minTurn; // use for when the coder give a negative number
+    private double maxAngle;
+    private double minAngle;
 
     private double maxRange;
     private double minRange;
 
     public LimeLightFollowingSubsystems() {
-        this.motor = new TalonFX(0); // change to the id
+        this.turningMotor = new TalonFX(0); // change to the id
 
         this.canCoder = new Encoder(0,0); // change to the id
         this.canCoder.reset();
 
         this.maxRange = 3;
         this.minRange = -3;
-        this.maxTurn = 360;
-        this.minTurn = 360;
-    }
 
-    public void InRotation() {
-        if (canCoder.get() > maxTurn){
-            motor.set(-0.3);
-            while (true) {
-                if (canCoder.get() >= 10) break;
-            }
-            motor.set(0);
-        } else if(canCoder.get() < minTurn) {
-            motor.set(-0.3);
-            while (true) {
-                if (canCoder.get() >= 10) break;
-            }
-            motor.set(0);
-        }else motor.set(0);
-
+        this.maxAngle = CanConstants.MaxAngle;
+        this.minAngle = CanConstants.MinAngle;
     }
 
     public void Turn(double speed) {
-        InRotation();
-        motor.set(speed);
+        turningMotor.set(speed);
     }
 
     // return the speed that the motor will be
@@ -59,5 +43,21 @@ public class LimeLightFollowingSubsystems extends SubsystemBase {
             return 0.3;
         }
         return 0;
+    }
+
+    public void reset() {
+        if (minAngle < canCoder.get()) {
+            Turn(getSpeed(canCoder.get(),0,10));
+        }
+    }
+
+    public double getSpeed(double x, double t, double error) {
+        double minSpeed = 0;
+        double decRate = 2000;
+        int multiplier = x < t ? 1 : -1;
+        if (Math.abs(x - t) < error) multiplier = 0;
+
+        double totalSpeed = minSpeed + (1 - minSpeed) * (Math.abs(x - t) / (decRate + Math.abs(x - t)));
+        return totalSpeed * multiplier;
     }
 }

@@ -26,8 +26,8 @@ public class RobotContainer {
     /* Settings */
     private final Map<String, Boolean> robotSystems = Map.of(
             "swerve", true,
-            "shooter", true,
-            "climb", true
+            "turret", true,
+            "sucking", false
     );
 
     /* Controllers */
@@ -70,9 +70,11 @@ public class RobotContainer {
             ));
         }
 
-        limeLightFollowingSubsystems.setDefaultCommand(new LimeLightFollowingCommand(
-                LimelightHelpers.getTX("",0),driverController, limeLightFollowingSubsystems
-        ));
+        if (robotSystems.get("turret")) {
+            limeLightFollowingSubsystems.setDefaultCommand(new LimeLightFollowingCommand(
+                    LimelightHelpers.getTX("",0),driverController, limeLightFollowingSubsystems
+            ));
+        }
     }
 
 
