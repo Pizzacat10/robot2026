@@ -10,7 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public class Pigeon {
+public class
+Pigeon {
 
     private static Pigeon mInstance;
 
