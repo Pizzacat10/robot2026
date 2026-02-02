@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class TurretCommandAuto extends Command {
 
-    private Map<String,Translation2d> hubs = Map.of(
+    private final Map<String,Translation2d> hubs = Map.of(
             "b", CanConstants.HubPosBlue,
             "r", CanConstants.HubPosRed
     );
