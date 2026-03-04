@@ -25,10 +25,10 @@ public class SwerveConstants {
     public static double wheelCircumference = chosenModule.wheelCircumference;
 
     /*swerve module position*/
-    public static Translation2d frontLeftPos = new Translation2d(0.38, 0.38);
-    public static Translation2d frontRightPos = new Translation2d(0.38, -0.38);
-    public static Translation2d backLeftPos = new Translation2d(-0.38, 0.38);
-    public static Translation2d backRightPos = new Translation2d(-0.38, -0.38);
+    public static Translation2d frontLeftPos = new Translation2d(0.32, 0.34);
+    public static Translation2d frontRightPos = new Translation2d(0.32,-0.34);
+    public static Translation2d backLeftPos = new Translation2d(-0.32, 0.34);
+    public static Translation2d backRightPos = new Translation2d(-0.32, -0.34);
     public static Translation2d[] modulesPositions = new Translation2d[4];
 
     /* Module Gear Ratios */
@@ -110,10 +110,10 @@ public class SwerveConstants {
     //Rotation2d.fromRotations(0.479736328125)
     //Rotation2d.fromRotations(-0.38134765625 - (3.0/4.0))
     //Rotation2d.fromRotations(-0.230224609375 - 0.5)
-    public static SwerveModuleConstants FR = new SwerveModuleConstants(1, 2, 9, Rotation2d.fromDegrees(-103.887).plus(Rotation2d.k180deg), slot0Configs, frontLeftPos);
-    public static SwerveModuleConstants FL = new SwerveModuleConstants(3, 4, 10, Rotation2d.fromDegrees(49.834), slot0Configs, frontRightPos);
-    public static SwerveModuleConstants BR = new SwerveModuleConstants(5, 6, 11, Rotation2d.fromDegrees(40.43).plus(Rotation2d.k180deg), slot0Configs, backLeftPos);
-    public static SwerveModuleConstants BL = new SwerveModuleConstants(7, 8, 12, Rotation2d.fromDegrees(169.805), slot0Configs, backRightPos);
+    public static SwerveModuleConstants FR = new SwerveModuleConstants(5, 6, 20, Rotation2d.fromDegrees(-39.375).rotateBy(Rotation2d.k180deg), slot0Configs, frontLeftPos);
+    public static SwerveModuleConstants FL = new SwerveModuleConstants(7, 8, 21, Rotation2d.fromDegrees(-99.229), slot0Configs, frontRightPos);
+    public static SwerveModuleConstants BR = new SwerveModuleConstants(3, 4, 18, Rotation2d.fromDegrees(-33.135).rotateBy(Rotation2d.k180deg), slot0Configs, backLeftPos);
+    public static SwerveModuleConstants BL = new SwerveModuleConstants(1, 2, 19, Rotation2d.fromDegrees(-47.9), slot0Configs, backRightPos);
 
 //    public String filepath = "/home/lvuser/natinst/ModuleOffsets.csv";
 

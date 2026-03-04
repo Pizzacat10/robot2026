@@ -5,10 +5,13 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuckingSubsystem;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class SuckingCommandAuto extends Command {
+    private static String stage = "close";
+
     private final Map<String, Double> stages = Map.of(
-      "open", 13.0,
+      "open", 15.694,
       "close",0.0
     );
 
@@ -17,15 +20,18 @@ public class SuckingCommandAuto extends Command {
     private double speed = -1;
 
 
-    public SuckingCommandAuto(SuckingSubsystem subsystem,String stage) {
+    public  SuckingCommandAuto(SuckingSubsystem subsystem) {
         this.subsystem = subsystem;
-        this.target = stages.getOrDefault(stage, null);
-        if (target == null) end(true);
     }
 
     @Override
     public void initialize() {
+        stage = getStage();
+        this.target = stages.getOrDefault(stage, null);
+        if (target == null) end(true);
         subsystem.reset();
+
+        subsystem.suck(Objects.equals(stage, "open") ? -1 : 0);
     }
 
     @Override
@@ -36,7 +42,7 @@ public class SuckingCommandAuto extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        subsystem.reset();
+        subsystem.autoReset();
     }
 
     @Override
@@ -45,6 +51,10 @@ public class SuckingCommandAuto extends Command {
     }
 
     public double getSpeed(double x, double t) {
-        return RobotContainer.getSpeed(x, t, 0.5, 1, 0, 10, false);
+        return RobotContainer.getSpeed(x, t, 0.5, 0.5, 0, 10, false);
+    }
+
+    private String getStage() {
+        return stage.equals("close") ? "open" : "close";
     }
 }

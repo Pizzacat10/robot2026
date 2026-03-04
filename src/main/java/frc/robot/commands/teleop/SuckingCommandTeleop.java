@@ -7,9 +7,9 @@ import frc.robot.subsystems.SuckingSubsystem;
 
 import java.util.function.Supplier;
 
-public class SuckingCommand extends Command {
-    private Supplier<Boolean> moveUp;
-    private Supplier<Boolean> moveDown;
+public class SuckingCommandTeleop extends Command {
+    private Boolean moveUp;
+    private Boolean moveDown;
 
     private Supplier<Boolean> sucking;
     private SuckingSubsystem suckingSubsystem;
@@ -17,11 +17,10 @@ public class SuckingCommand extends Command {
     private double closePose;
     private double openPose;
 
-    public SuckingCommand(SuckingSubsystem suckingSubsystem,Supplier<Boolean> moveUp, Supplier<Boolean> moveDown, Supplier<Boolean> sucking) {
+    public SuckingCommandTeleop(SuckingSubsystem suckingSubsystem, Boolean moveUp, Boolean moveDown) {
         this.moveUp = moveUp;
         this.moveDown = moveDown;
 
-        this.sucking = sucking;
         this.suckingSubsystem = suckingSubsystem;
 
         this.closePose = CanConstants.closeSate;
@@ -39,8 +38,7 @@ public class SuckingCommand extends Command {
     @Override
     public void execute() {
         SmartDashboard.putNumber("Arm pose", suckingSubsystem.getArmPose());
-        suckingSubsystem.suck(sucking.get() ? -1 : 0);
-        suckingSubsystem.moveArm(moveUp.get() ? 0.1 : moveDown.get() ? -0.1 : 0);
+        suckingSubsystem.moveArm(moveUp ? 0.1 : moveDown ? -0.1 : 0);
     }
 
 

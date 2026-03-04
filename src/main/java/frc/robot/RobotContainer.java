@@ -1,8 +1,6 @@
 package frc.robot;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -14,10 +12,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ActionCommands;
+import frc.robot.commands.auto.ClimbCommandAuto;
 import frc.robot.commands.auto.SuckingCommandAuto;
 import frc.robot.commands.auto.TurretCommandAuto;
+import frc.robot.commands.debug.ClimbDebugCommand;
+import frc.robot.commands.debug.SuckingDebugCommand;
 import frc.robot.commands.teleop.*;
-import frc.robot.constants.CanConstants;
 import frc.robot.constants.OperatorConstants;
 import frc.robot.subsystems.*;
 import frc.robot.utils.LimelightHelpers;
@@ -28,11 +28,11 @@ public class RobotContainer {
 
     /* Settings */
     private final Map<String, Boolean> robotSystems = Map.of(
-            "swerve", false,
+            "swerve", true,
             "turret", true,
             "sucking", true,
-            "elevator", false,
-            "storage", false
+            "climb", false,
+            "storage", true
     );
 
     /* Controllers */
@@ -43,7 +43,7 @@ public class RobotContainer {
     public final StorageSubsystem storageSubsystem = new StorageSubsystem();
     public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     public final SuckingSubsystem suckingSubsystem = new SuckingSubsystem();
-    public final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    public final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
     private final PoseEstimatorSubsystem estimatorSubsystem = new PoseEstimatorSubsystem(swerveSubsystem);
     private final TurretSubystem turretSubystem = new TurretSubystem();
 
@@ -56,6 +56,8 @@ public class RobotContainer {
     /* Variables */
     private static boolean fieldRelative = true;
     private final Field2d field2d = new Field2d();
+    private int count = 1;
+
 
 
     public RobotContainer() {
@@ -82,29 +84,29 @@ public class RobotContainer {
         }
 
         if (robotSystems.get("turret")) {
-            turretSubystem.setDefaultCommand(new TurretCommand(turretSubystem,
-                    driverController::getRightY, driverController::getLeftY
+            turretSubystem.setDefaultCommand(new TurretCommandTeleop(turretSubystem,
+                driverController.getHID()::getCrossButton,driverController.getHID()::getTriangleButton,driverController.getHID()::getR1Button,driverController.getHID()::getL1Button,driverController::getL2Axis
             ));
-            new TurretCommandAuto(turretSubystem,swerveSubsystem);
+
         }
 
         if (robotSystems.get("sucking")) {
-            suckingSubsystem.setDefaultCommand(new SuckingCommand(suckingSubsystem,
-                    driverController.getHID()::getR1Button,driverController.getHID()::getR2Button,driverController.getHID()::getL1Button
+            suckingSubsystem.setDefaultCommand(new SuckingCommandTeleop(
+                    suckingSubsystem,getPOVRight().getAsBoolean(),getPOVLeft().getAsBoolean()
             ));
-            getPOVUp().onTrue(new SuckingCommandAuto(suckingSubsystem,"close"));
-            getPOVDown().onTrue(new SuckingCommandAuto(suckingSubsystem,"open"));
+            getPOVDown().onTrue(new SuckingCommandAuto(suckingSubsystem));
         }
 
-        if (robotSystems.get("elevator")) {
-            elevatorSubsystem.setDefaultCommand(new ElevatorCommand(
-                    driverController::getRightY,elevatorSubsystem
-            ));
+        if (robotSystems.get("climb")) {
+            //climbSubsystem.setDefaultCommand(new ClimbCommandTeleop(
+            //driverController.getHID()::getR1Button, driverController.getHID()::getL1Button, climbSubsystem));
+            climbSubsystem.setDefaultCommand(new ClimbDebugCommand(climbSubsystem));
+            getPOVUp().onTrue(new ClimbCommandAuto(climbSubsystem));
         }
 
         if (robotSystems.get("storage")) {
-            storageSubsystem.setDefaultCommand(new StorageCommand(
-                    driverController::getLeftY,storageSubsystem
+            storageSubsystem.setDefaultCommand(new StorageCommandTeleop(
+                    driverController.getHID()::getSquareButton,driverController.getHID()::getCircleButton,storageSubsystem
             ));
         }
     }

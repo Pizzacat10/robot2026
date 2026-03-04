@@ -5,13 +5,15 @@ import frc.robot.subsystems.StorageSubsystem;
 
 import java.util.function.Supplier;
 
-public class StorageCommand extends Command {
+public class StorageCommandTeleop extends Command {
 
-    private Supplier<Double> speed;
+    private Supplier<Boolean> speed;
+    private Supplier<Boolean> back;
     private StorageSubsystem subsystem;
 
-    public StorageCommand(Supplier<Double> speed,StorageSubsystem subsystem) {
+    public StorageCommandTeleop(Supplier<Boolean> speed ,Supplier<Boolean> back, StorageSubsystem subsystem) {
         this.speed = speed;
+        this.back = back;
         this.subsystem = subsystem;
 
         addRequirements(subsystem);
@@ -26,7 +28,7 @@ public class StorageCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        subsystem.MoveToTurret(speed.get());
+        subsystem.MoveToTurret(speed.get() ? -1 : back.get() ? 1 : 0);
     }
 
 

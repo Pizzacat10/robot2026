@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.CanConstants;
 
 public class TurretSubystem extends SuckingSubsystem{
@@ -12,13 +15,18 @@ public class TurretSubystem extends SuckingSubsystem{
     public TurretSubystem() {
         this.shootingMotorDown = new TalonFX(CanConstants.ShootingMotorDown);
         this.hoodMoveMotor = new TalonFX(CanConstants.HoodMotor);
+        TalonFXConfiguration configs = new TalonFXConfiguration();
+        configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        hoodMoveMotor.getConfigurator().apply(configs);
         this.shootingMotorUp = new TalonFX(CanConstants.ShootingMotorUp);
         this.turretSpin = new TalonFX(CanConstants.TurretSpin);
     }
 
     public double getTurretPose() {return turretSpin.getPosition().getValueAsDouble();}
 
-    public void  turn(double speed) {
+    public double getHoodPose() {return hoodMoveMotor.getPosition().getValueAsDouble();}
+
+    public void turn(double speed) {
         turretSpin.set(speed);
     }
 
@@ -26,9 +34,10 @@ public class TurretSubystem extends SuckingSubsystem{
         hoodMoveMotor.set(speed);
     }
 
+
     public void shootingSpeed(double speed) {
-        shootingMotorDown.set(-speed);
-        shootingMotorUp.set(speed);
+        shootingMotorDown.set(speed);
+        shootingMotorUp.set(-speed);
     }
 
     public void reset() {

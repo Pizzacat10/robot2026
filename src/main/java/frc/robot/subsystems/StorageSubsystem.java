@@ -15,7 +15,7 @@ public class StorageSubsystem extends SubsystemBase {
     }
 
     public void MoveToTurret(double speed) {
-        upStorageMotor.set(- speed);
+        upStorageMotor.set(-speed);
         downStorageMotor.set(speed);
     }
 }
