@@ -12,19 +12,26 @@ public class ClimbCommandAuto extends Command {
             "close", 2.0,
             "open", 41.3
     );
-    private ClimbSubsystem subsystem;
+    private final ClimbSubsystem subsystem;
+    private final boolean forceStage;
     private Double target;
     private double speed = -1;
 
     public ClimbCommandAuto(ClimbSubsystem subsystem) {
         this.subsystem = subsystem;
+        forceStage = false;
+    }
 
+    public ClimbCommandAuto(ClimbSubsystem subsystem, String stage) {
+        this.subsystem = subsystem;
+        this.forceStage = true;
+        ClimbCommandAuto.stage = stage;
     }
 
     @Override
     public void initialize() {
         subsystem.reset();
-        toggleStage();
+        if (!forceStage) toggleStage();
         this.target = stages.getOrDefault(stage, null);
         if (target == null) end(true);
     }

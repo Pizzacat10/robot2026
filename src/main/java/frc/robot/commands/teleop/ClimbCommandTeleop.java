@@ -8,11 +8,11 @@ import java.util.function.Supplier;
 
 public class ClimbCommandTeleop extends Command {
     
-    private Supplier<Boolean> moveUp;
+    private Supplier<Double> moveUp;
     private Supplier<Boolean> moveDown;
     private ClimbSubsystem climbSubsystem;
     
-    public ClimbCommandTeleop(Supplier<Boolean> moveUp, Supplier<Boolean> moveDown , ClimbSubsystem climbSubsystem) {
+    public ClimbCommandTeleop(Supplier<Double> moveUp, Supplier<Boolean> moveDown , ClimbSubsystem climbSubsystem) {
         this.moveDown = moveDown;
         this.moveUp = moveUp;
         this.climbSubsystem = climbSubsystem;
@@ -27,7 +27,7 @@ public class ClimbCommandTeleop extends Command {
 
     @Override
     public void execute() {
-        climbSubsystem.move(moveDown.get() ? -0.3 : moveUp.get() ? 0.3 : 0);
+        climbSubsystem.move(moveUp.get() > 0.1 ? moveUp.get() : moveUp.get() < -0.1 ? moveUp.get() : 0);
         SmartDashboard.putNumber("hanger pos", climbSubsystem.getClimbPose());
     }
 

@@ -12,11 +12,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ActionCommands;
-import frc.robot.commands.auto.ClimbCommandAuto;
 import frc.robot.commands.auto.SuckingCommandAuto;
 import frc.robot.commands.auto.TurretCommandAuto;
-import frc.robot.commands.debug.ClimbDebugCommand;
-import frc.robot.commands.debug.SuckingDebugCommand;
 import frc.robot.commands.teleop.*;
 import frc.robot.constants.OperatorConstants;
 import frc.robot.subsystems.*;
@@ -27,7 +24,7 @@ import java.util.Map;
 public class RobotContainer {
 
     /* Settings */
-    private final Map<String, Boolean> robotSystems = Map.of(
+    public static final Map<String, Boolean> robotSystems = Map.of(
             "swerve", true,
             "turret", true,
             "sucking", true,
@@ -49,7 +46,7 @@ public class RobotContainer {
 
     /* Helpers */
     private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(swerveSubsystem);
-    private final ActionCommands actions = new ActionCommands();
+    private final ActionCommands actions = new ActionCommands(suckingSubsystem, climbSubsystem, turretSubystem);
     private final SendableChooser<Command> autoChooser;
     private final LimelightHelpers limelightHelpers = new LimelightHelpers();
 
@@ -57,7 +54,6 @@ public class RobotContainer {
     private static boolean fieldRelative = true;
     private final Field2d field2d = new Field2d();
     private int count = 1;
-
 
 
     public RobotContainer() {
@@ -69,6 +65,9 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("AutoPath", field2d);
 
+
+        SmartDashboard.putNumber("shootSpeed", 0);
+        SmartDashboard.putNumber("shootAngle", 0);
 
         configureBindings();
     }
@@ -84,24 +83,25 @@ public class RobotContainer {
         }
 
         if (robotSystems.get("turret")) {
-            turretSubystem.setDefaultCommand(new TurretCommandTeleop(turretSubystem,
-                driverController.getHID()::getCrossButton,driverController.getHID()::getTriangleButton,driverController.getHID()::getR1Button,driverController.getHID()::getL1Button,driverController::getL2Axis
-            ));
-
+            //turretSubystem.setDefaultCommand(new TurretCommandTeleop(turretSubystem,
+            //    driverController.getHID()::getCrossButton,driverController.getHID()::getTriangleButton,driverController.getHID()::getR1Button,driverController.getHID()::getL1Button,driverController::getL2Axis
+            //));
+            turretSubystem.setDefaultCommand(new TurretCommandAuto(turretSubystem, () -> swerveSubsystem.getGyro().getRateStatusSignal().getValueAsDouble(), () -> driverController.getR2Axis(), () -> driverController.getL2Axis()));
         }
 
         if (robotSystems.get("sucking")) {
             suckingSubsystem.setDefaultCommand(new SuckingCommandTeleop(
-                    suckingSubsystem,getPOVRight().getAsBoolean(),getPOVLeft().getAsBoolean()
+                    suckingSubsystem,driverController.getHID()::getCreateButton,driverController.getHID()::getOptionsButton,driverController.getHID()::getCircleButton
+
             ));
             getPOVDown().onTrue(new SuckingCommandAuto(suckingSubsystem));
         }
 
         if (robotSystems.get("climb")) {
-            //climbSubsystem.setDefaultCommand(new ClimbCommandTeleop(
-            //driverController.getHID()::getR1Button, driverController.getHID()::getL1Button, climbSubsystem));
-            climbSubsystem.setDefaultCommand(new ClimbDebugCommand(climbSubsystem));
-            getPOVUp().onTrue(new ClimbCommandAuto(climbSubsystem));
+            climbSubsystem.setDefaultCommand(new ClimbCommandTeleop(
+            driverController::getRightY, driverController.getHID()::getL1Button, climbSubsystem));
+            //climbSubsystem.setDefaultCommand(new ClimbDebugCommand(climbSubsystem));
+            //getPOVUp().onTrue(new ClimbCommandAuto(climbSubsystem));
         }
 
         if (robotSystems.get("storage")) {
@@ -109,6 +109,8 @@ public class RobotContainer {
                     driverController.getHID()::getSquareButton,driverController.getHID()::getCircleButton,storageSubsystem
             ));
         }
+
+        new Trigger(driverController.getHID()::getPSButton).onTrue(actions.compact());
     }
 
 

@@ -205,4 +205,8 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         return null;
     }
+
+    public Pigeon getGyro() {
+        return m_gyro;
+    }
 }

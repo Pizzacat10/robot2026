@@ -18,20 +18,27 @@ public class SuckingCommandAuto extends Command {
     private final SuckingSubsystem subsystem;
     private Double target;
     private double speed = -1;
-
+    private final boolean forceStage;
 
     public  SuckingCommandAuto(SuckingSubsystem subsystem) {
         this.subsystem = subsystem;
+        forceStage = false;
+    }
+
+    public SuckingCommandAuto(SuckingSubsystem subsystem, String stage) {
+        this.subsystem = subsystem;
+        this.forceStage = true;
+        SuckingCommandAuto.stage = stage;
     }
 
     @Override
     public void initialize() {
-        stage = getStage();
+        if (!forceStage) stage = getStage();
         this.target = stages.getOrDefault(stage, null);
         if (target == null) end(true);
         subsystem.reset();
 
-        subsystem.suck(Objects.equals(stage, "open") ? -1 : 0);
+        subsystem.suck(stage.equals("open") ? -1 : 0);
     }
 
     @Override

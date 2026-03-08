@@ -38,13 +38,15 @@ public class TurretCommandTeleop extends Command {
 
     @Override
     public void execute() {
-        subystem.moveHood(hoodDown.get() ? -0.15 : hoodUp.get() ? 0.1 : 0);
+        subystem.moveHood(hoodDown.get() ? -0.15 : hoodUp.get() ? 0.05 : 0);
 
         subystem.turn(spinLeft.get() ? 0.2 : spinRight.get() ? -0.2 : 0);
 
-        subystem.shootingSpeed((shootingSpeed.get() + 1) / 2);
+        subystem.shootingSpeed(SmartDashboard.getNumber("shootSpeed", 0));
 
-
+        SmartDashboard.putNumber("pose ", subystem.getHoodPose());
+        SmartDashboard.putNumber("angle ", subystem.getHoodAngle());
+        SmartDashboard.putNumber("speed ", (shootingSpeed.get() + 1) / 2);
     }
 
     @Override

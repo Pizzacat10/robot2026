@@ -1,40 +1,24 @@
 package frc.robot.commands.auto;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.constants.CanConstants;
-import frc.robot.models.Limelight;
-import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubystem;
-import frc.robot.utils.LimelightHelpers;
 
-import java.util.Map;
+import java.util.function.Supplier;
 
 public class TurretCommandAuto extends Command {
 
-    private final Map<String,Translation2d> hubs = Map.of(
-            "b", CanConstants.HubPosBlue,
-            "r", CanConstants.HubPosRed
-    );
-
     private final TurretSubystem subsystem;
-    private final SwerveSubsystem swerveSubsystem;
-    private Double target;
-    private double speed = -1;
-    Translation2d hubPos = hubs.get("b");
-    private final Limelight LL;
-    //RobotContainer.getAlince()
+    private final Supplier<Double> rotationVelocity;
+    private final Supplier<Double> up;
+    private final Supplier<Double> down;
 
-    public TurretCommandAuto(TurretSubystem subsystem, SwerveSubsystem swerveSubsystem) {
+    public TurretCommandAuto(TurretSubystem subsystem, Supplier<Double> rotationVelocity, Supplier<Double> up, Supplier<Double> down) {
         this.subsystem = subsystem;
-        this.target = 0.0;
-        this.swerveSubsystem = swerveSubsystem;
-
-        this.LL = new Limelight("0");
+        this.rotationVelocity = rotationVelocity;
+        this.up = up;
+        this.down = down;
 
         addRequirements(subsystem);
     }
@@ -46,53 +30,50 @@ public class TurretCommandAuto extends Command {
 
     @Override
     public void execute() {
-        SmartDashboard.putNumber("Turret Angle", subsystem.getTurretPose());
+        /* Angle */
+        double angle = SmartDashboard.getNumber("shootAngle",0);
+        double pose = subsystem.angleToPose(angle);
 
+//        double angleSpeed = getSpeed(subsystem.getHoodPose(),pose,0.2, 1,0.2,5);
+        double angleSpeed = - ((up.get() + 1) / 2) * 0.5;
+        double downSpeed = (down.get() + 1) / 2;
+        if (downSpeed != 0) angleSpeed = downSpeed * 0.5;
+        subsystem.moveHood(angleSpeed);
 
-        //if(DriverStation.getGameSpecificMessage().charAt(0) == RobotContainer.getAlince()) {
-            subsystem.shootingSpeed(1);
-        //}
+        /* Turning */
 
-        //if (swerveSubsystem.getPose().getY() < hubPos.getY() && RobotContainer.getAlince() == 'b' || swerveSubsystem.getPose().getY() > hubPos.getY() && RobotContainer.getAlince() == 'r') {
-            getTargetAngle(swerveSubsystem.getPose());
-            speed = getSpeed(subsystem.getTurretPose(), target);
-            subsystem.turn(speed);
-        //}
-        /*else {
-            speed = getSpeed(subsystem.getTurretPose(), 0);
-            subsystem.turn(speed);
-        }*/
+        double rotVelocity = rotationVelocity.get();
+        double txCurrent = subsystem.getLimelight().getTX();
+        double velocityTurn = (rotVelocity / 25);
+        double txTarget = subsystem.getTx(subsystem.getLimelight().getTA());
+        if (txTarget == 0) velocityTurn = 0;
+        txTarget += velocityTurn;
 
+        double turningSpeed = getSpeed(txCurrent, txTarget,0, 0.5,1,20);
+        subsystem.turn(turningSpeed);
 
+        /* Shooting */
+
+        subsystem.shootingSpeed(SmartDashboard.getNumber("shootSpeed", 0));
+        /* Debug */
+
+        SmartDashboard.putNumber("Ta", subsystem.getLimelight().getTA());
+        SmartDashboard.putNumber("Turret angle", angle);
+        SmartDashboard.putNumber("Turret pose", pose);
+        SmartDashboard.putNumber("real Turret pose", subsystem.getHoodPose());
     }
 
     @Override
     public void end(boolean interrupted) {
-            subsystem.reset();
+        subsystem.reset();
     }
 
     @Override
     public boolean isFinished() {
-            return false;
+        return false;
     }
 
-    public double getSpeedToShoot() {
-        return 1 / LL.getTA(); // will return the speed with the function with the limelight TA
-    }
-
-    public void getTargetAngle(Pose2d robotPos) {
-        double fare = robotPos.getY() > hubPos.getY() ? robotPos.getY() - hubPos.getY() : hubPos.getY() - robotPos.getY();
-        double close = robotPos.getX() > hubPos.getX() ? robotPos.getX() - hubPos.getX() : hubPos.getX() - robotPos.getX();
-        double angle = Math.atan(fare / close);
-
-        double angleDegrees = Math.toDegrees(angle);
-
-        double poseMult = robotPos.getX() > hubPos.getX() ? -1 : 1;
-
-        target = (angleDegrees * poseMult + robotPos.getRotation().getDegrees() + CanConstants.TurretOffset) * CanConstants.OneTurnToDegrees;
-    }
-
-    public double getSpeed(double x, double t) {
-        return RobotContainer.getSpeed(x, t, 0.5, 0.3, 0, 1, false);
+    public double getSpeed(double x, double t, double minSpeed, double maxSpeed,double error,double decRate) {
+        return RobotContainer.getSpeed(x, t, error, maxSpeed, minSpeed, decRate, false);
     }
 }

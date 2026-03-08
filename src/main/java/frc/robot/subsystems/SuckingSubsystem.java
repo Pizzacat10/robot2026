@@ -6,24 +6,27 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CanConstants;
+import frc.robot.models.motorHelper.MotorDefaultPID;
+import frc.robot.models.motorHelper.MotorLib;
 
 public class SuckingSubsystem extends SubsystemBase {
-    private TalonFX motorArm;
-    private TalonFX sucking;
+    private MotorLib motorArm;
+    private MotorLib sucking;
 
+    private MotorDefaultPID.Krakenx44 krakenx44 = new MotorDefaultPID.Krakenx44();
+    private MotorDefaultPID.Krakenx60 krakenx60 = new MotorDefaultPID.Krakenx60();
 
     public SuckingSubsystem() {
-        this.motorArm = new TalonFX(CanConstants.SuckingArmMotor,CanConstants.roborioBus);
-        this.motorArm.setPosition(0);
-        this.sucking = new TalonFX(CanConstants.suckingMotor,CanConstants.roborioBus);
+        this.motorArm = new MotorLib(CanConstants.SuckingArmMotor,krakenx60,true,false);
+        this.sucking = new MotorLib(CanConstants.suckingMotor,krakenx60,true,false);
     }
 
-    public void suck(double value) {
-        sucking.set(value);
+    public void suck(double speed) {
+        sucking.set(sucking.speedToRPM(speed));
     }
 
     public void moveArm(double speed) {
-        motorArm.set(speed);
+        motorArm.set(motorArm.speedToRPM(speed));
     }
 
     public void debug() {
