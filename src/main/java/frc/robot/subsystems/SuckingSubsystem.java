@@ -13,7 +13,6 @@ public class SuckingSubsystem extends SubsystemBase {
     private MotorLib motorArm;
     private MotorLib sucking;
 
-    private MotorDefaultPID.Krakenx44 krakenx44 = new MotorDefaultPID.Krakenx44();
     private MotorDefaultPID.Krakenx60 krakenx60 = new MotorDefaultPID.Krakenx60();
 
     public SuckingSubsystem() {

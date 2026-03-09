@@ -11,9 +11,7 @@ public class StorageSubsystem extends SubsystemBase {
 
     private MotorLib upStorageMotor;
     private MotorLib downStorageMotor;
-    private VelocityVoltage velocityVoltage = new VelocityVoltage(0);
 
-    private MotorDefaultPID.Krakenx44 krakenx44 = new MotorDefaultPID.Krakenx44();
     private MotorDefaultPID.Krakenx60 krakenx60 = new MotorDefaultPID.Krakenx60();
 
     public StorageSubsystem() {

@@ -10,7 +10,6 @@ import frc.robot.models.motorHelper.MotorLib;
 
 public class ClimbSubsystem extends SubsystemBase {
 
-    private final VelocityVoltage voltage = new VelocityVoltage(0);
     private MotorLib motor;
 
     private MotorDefaultPID.Krakenx44 krakenx44 = new MotorDefaultPID.Krakenx44();
