@@ -54,7 +54,7 @@ public class TurretCommandAuto extends Command {
 
         /* Shooting */
 
-        subsystem.shootingSpeed(SmartDashboard.getNumber("shootSpeed", 0));
+        subsystem.shootingspeed(SmartDashboard.getNumber("shootSpeed", 0));
         /* Debug */
 
         SmartDashboard.putNumber("Ta", subsystem.getLimelight().getTA());

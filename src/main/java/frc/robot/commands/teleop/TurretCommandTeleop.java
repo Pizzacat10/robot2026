@@ -42,7 +42,7 @@ public class TurretCommandTeleop extends Command {
 
         subystem.turn(spinLeft.get() ? 0.2 : spinRight.get() ? -0.2 : 0);
 
-        subystem.shootingSpeed(SmartDashboard.getNumber("shootSpeed", 0));
+        subystem.shootingspeed(SmartDashboard.getNumber("shootSpeed", 0));
 
         SmartDashboard.putNumber("pose ", subystem.getHoodPose());
         SmartDashboard.putNumber("angle ", subystem.getHoodAngle());

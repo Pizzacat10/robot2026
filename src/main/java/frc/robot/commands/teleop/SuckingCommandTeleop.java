@@ -37,7 +37,7 @@ public class SuckingCommandTeleop extends Command {
     @Override
     public void execute() {
         SmartDashboard.putNumber("Arm pose", suckingSubsystem.getArmPose());
-        suckingSubsystem.moveArm(moveUp.get() ? 0.3 : moveDown.get() ? -0.3 : 0);
+        suckingSubsystem.moveArm(moveUp.get() ? 0.1 : moveDown.get() ? -0.1 : 0);
         suckingSubsystem.suck(sucking.get() ? -1 : 0);
     }
 

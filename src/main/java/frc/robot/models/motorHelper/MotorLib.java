@@ -9,14 +9,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.opencv.core.Mat;
 
 public class MotorLib {
 
     private TalonFX motor;
     TalonFXConfiguration configuration = new TalonFXConfiguration();
-    private VelocityVoltage velocityVoltage = new VelocityVoltage(0);
+    private VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(0);
     private double maxRPM;
-
+    private boolean safeMode = false;
     /**
      * this is used to control the motor with rpm
      * this let you control the motor better and helps it maintain his velocity
@@ -36,10 +37,12 @@ public class MotorLib {
         this.configuration.Slot0.kV = kV;
         this.configuration.Slot0.kS = kS;
 
-        this.configuration.MotorOutput.Inverted = inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+        this.configuration.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         this.configuration.MotorOutput.NeutralMode = brake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
 
         this.motor.setPosition(0);
+        this.motor.getConfigurator().apply(configuration);
+
     }
 
     public MotorLib(int id, MotorDefaultPID.Krakenx44 krakenx44 , boolean brake, boolean inverted){
@@ -50,10 +53,11 @@ public class MotorLib {
         this.configuration.Slot0.kV = krakenx44.kV();
         this.configuration.Slot0.kS = krakenx44.kS();
 
-        this.configuration.MotorOutput.Inverted = inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+        this.configuration.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         this.configuration.MotorOutput.NeutralMode = brake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
 
         this.motor.setPosition(0);
+        this.motor.getConfigurator().apply(configuration);
     }
 
     public MotorLib(int id, MotorDefaultPID.Krakenx60 krakenx60, boolean brake, boolean inverted){
@@ -64,10 +68,11 @@ public class MotorLib {
         this.configuration.Slot0.kV = krakenx60.kV();
         this.configuration.Slot0.kS = krakenx60.kS();
 
-        this.configuration.MotorOutput.Inverted = inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+        this.configuration.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         this.configuration.MotorOutput.NeutralMode = brake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
 
         this.motor.setPosition(0);
+        this.motor.getConfigurator().apply(configuration);
     }
 
     /**
@@ -80,12 +85,28 @@ public class MotorLib {
     }
 
     /**
+     * set the max speed to 50% of the motor max speed
+     * can use the "getMotorData" function to see if your on safe mode or not or the "getSafeMode"
+     * @param safeMode boolean that tell the motor if to be in a safe mode or not
+     */
+    public void setSafeMode(boolean safeMode) {
+        this.safeMode = safeMode;
+    }
+
+    public boolean getSafeMode() {
+        return safeMode;
+    }
+
+    /**
      * let you control your motor with rpm and not presents
-     *
+     * if safe mode is on you can only use up to 50% of your max rpm
      * @param rpm motor rpm from maxRPM to -maxRPM (e.g. kraken x60 maxRPM = 6000 6000 to -6000)
      */
     public void set(double rpm) {
         double rps = rpm / 60;
+
+        if (safeMode) {rps = Math.min(rpm,maxRPM);}
+
         motor.setControl(velocityVoltage.withVelocity(rps));
     }
 
@@ -96,13 +117,14 @@ public class MotorLib {
      */
     public void getMotorData(String name){
         String MotorName = name + "/";
-        SmartDashboard.putNumber(MotorName + "Motor position", motor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber(MotorName + "Motor velocity", motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber(MotorName + "Motor torque", motor.getTorqueCurrent().getValueAsDouble());
-        SmartDashboard.putNumber(MotorName + "Motor supply voltage", motor.getSupplyVoltage().getValueAsDouble());
-        SmartDashboard.putNumber(MotorName + "Motor voltage", motor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber(MotorName + "Motor temp", motor.getDeviceTemp().getValueAsDouble());
-        SmartDashboard.putBoolean(MotorName + "Motor Voltage", motor.hasResetOccurred());
+        SmartDashboard.putBoolean(MotorName + " safe mode", getSafeMode());
+        SmartDashboard.putNumber(MotorName + " position", motor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber(MotorName + " velocity", motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber(MotorName + " torque", motor.getTorqueCurrent().getValueAsDouble());
+        SmartDashboard.putNumber(MotorName + " supply voltage", motor.getSupplyVoltage().getValueAsDouble());
+        SmartDashboard.putNumber(MotorName + " voltage", motor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber(MotorName + " temp", motor.getDeviceTemp().getValueAsDouble());
+        SmartDashboard.putBoolean(MotorName + " Voltage", motor.hasResetOccurred());
     }
 
     /**

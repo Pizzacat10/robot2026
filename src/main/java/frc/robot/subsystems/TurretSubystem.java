@@ -12,12 +12,14 @@ import java.util.Map;
 public class TurretSubystem extends SuckingSubsystem{
 
     private final Map<Double, Double> targetTx = Map.of(
-            0.65, 2.53,
-            0.54,2.27,
-            0.43, 0.79,
-            0.213,0.55,
-            0.192,-0.54,
-            0.12, -0.79
+            0.109,-0.96,
+            0.2,-0.86,
+            0.3,0.05,
+            0.4,1.49,
+            0.5,1.81,
+            0.6,1.0,
+            0.7,1.4,
+            0.8,2.0
     );
 
     private final Map<Double, ShootingParams> shootingParams = Map.of(
@@ -35,9 +37,9 @@ public class TurretSubystem extends SuckingSubsystem{
     private MotorDefaultPID.Krakenx60 krakenx60 = new MotorDefaultPID.Krakenx60();
 
     public TurretSubystem() {
-        this.shootingMotorDown = new MotorLib(CanConstants.TurretSpin, krakenx44 ,true,false);
-        this.hoodMoveMotor = new MotorLib(CanConstants.TurretSpin, krakenx60 ,true,false);
-        this.shootingMotorUp = new MotorLib(CanConstants.TurretSpin, krakenx44 ,true,true);
+        this.shootingMotorDown = new MotorLib(CanConstants.ShootingMotorDown, krakenx44 ,true,false);
+        this.hoodMoveMotor = new MotorLib(CanConstants.HoodMotor, krakenx60 ,true,true);
+        this.shootingMotorUp = new MotorLib(CanConstants.ShootingMotorUp, krakenx44 ,true,true);
         this.turretSpin = new MotorLib(CanConstants.TurretSpin, krakenx44 ,true,false);
         this.LL = new Limelight("limelight-shooter");
     }
@@ -65,16 +67,14 @@ public class TurretSubystem extends SuckingSubsystem{
         hoodMoveMotor.set(hoodMoveMotor.speedToRPM(speed));
     }
 
-    public void shootingSpeed(double rpm) {
-        double rps = rpm / 60;
-
-        shootingMotorDown.set(rps);
-        shootingMotorUp.set(rps);
+    public void shootingspeed(double rpm) {
+        shootingMotorDown.set(rpm);
+        shootingMotorUp.set(rpm);
     }
 
     public void reset() {
         moveHood(0);
-        shootingSpeed(0);
+        shootingspeed(0);
         turn(0);
     }
 
